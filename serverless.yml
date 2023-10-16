@@ -1,3 +1,21 @@
+service: my-service
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+
 functions:
   hello:
     handler: handler.hello
+    events:
+      - http:
+          path: hello
+          method: get
+
+plugins:
+  - serverless-webpack
+
+custom:
+  webpack:
+    webpackConfig: 'webpack.config.js'
+    includeModules: true
