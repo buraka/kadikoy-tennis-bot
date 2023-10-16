@@ -1,21 +1,17 @@
-service: my-service
+service: serverless-http-api-typescript
+frameworkVersion: '3'
 
 provider:
   name: aws
-  runtime: nodejs14.x
+  runtime: nodejs18.x
 
 functions:
   hello:
     handler: handler.hello
     events:
-      - http:
-          path: hello
+      - httpApi:
+          path: /
           method: get
 
 plugins:
-  - serverless-webpack
-
-custom:
-  webpack:
-    webpackConfig: 'webpack.config.js'
-    includeModules: true
+  - serverless-plugin-typescript
