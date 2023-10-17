@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import './models/index';
 
-export default ({ db }) => {
+export default ({ db }: { db: any }) => {
 
   const connect = () => {
     console.log(db)

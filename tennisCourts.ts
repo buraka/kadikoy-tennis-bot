@@ -20,7 +20,7 @@ const formatDateForMessaging = (dateStr: string | undefined) => {
 
 const checkCourts = async () => {
     connect({ db: process.env.SCRIPTS_DB_URL });
-    const courtList = await court.find({});
+    const courtList: any[] = await court.find({});
     for (const currentCourt of courtList) {
         const res = await axios({
             method: 'get',
@@ -33,10 +33,10 @@ const checkCourts = async () => {
         });
         Array.prototype.push.apply(programs, nextWeekRes.data.programs);
 
-        let availableSlots = programs.filter(program => program.statu === 1).map(program => program.programDate)
+        let availableSlots = programs.filter((program: any) => program.statu === 1).map((program: any) => program.programDate)
 
         // check and alert if new slot found
-        const newSlots = availableSlots.filter(date => currentCourt.availableSlots.filter(slot => slot.date === date).length === 0)
+        const newSlots = availableSlots.filter((date: any) => currentCourt.availableSlots.filter((slot: any) => slot.date === date).length === 0)
         if (newSlots.length > 0) {
             // Alert new slot found
             let msg = `Yeni Slot\nKort: ${currentCourt.name} \n`;
@@ -47,10 +47,10 @@ const checkCourts = async () => {
         }
 
         // update available slots if necessary
-        const slotDateList = currentCourt.availableSlots.map(slot => slot.date)
+        const slotDateList = currentCourt.availableSlots.map((slot: any) => slot.date)
         if (slotDateList.join(' - ') !== availableSlots.join(' - ')) {
             // update slots
-            currentCourt.availableSlots = availableSlots.map(slot => ({
+            currentCourt.availableSlots = availableSlots.map((slot: string) => ({
                 date: slot
             }));
             await currentCourt.save()
