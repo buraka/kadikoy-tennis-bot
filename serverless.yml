@@ -1,17 +1,22 @@
-service: serverless-http-api-typescript
+service: serverless-tennis-bot
 frameworkVersion: '3'
 
 provider:
   name: aws
   runtime: nodejs18.x
+  region: eu-central-1
+  environment:
+    TENNIS_TELEGRAM_BOT_CHAT_ID: ${ssm:/tennis/TENNIS_TELEGRAM_BOT_CHAT_ID}
+    TENNIS_TELEGRAM_BOT_TOKEN: ${ssm:/tennis/TENNIS_TELEGRAM_BOT_TOKEN}
+    SCRIPTS_DB_URL: ${ssm:/tennis/SCRIPTS_DB_URL}
 
 functions:
-  hello:
-    handler: handler.hello
+  scheduledFunction:
+    handler: handler.scheduledFunction
     events:
-      - httpApi:
-          path: /
-          method: get
+      - schedule:
+          rate: rate(5 minutes)
+          enabled: true
 
 plugins:
   - serverless-plugin-typescript

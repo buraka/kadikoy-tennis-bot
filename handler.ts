@@ -1,17 +1,15 @@
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
+import { ScheduledEvent, Context } from 'aws-lambda';
+import { checkCourts } from './tennisCourts';
 
-export const hello = async (
-  event: APIGatewayProxyEvent
-): Promise<APIGatewayProxyResult> => {
+export async function scheduledFunction(event: ScheduledEvent, context: Context) {
+  console.log('Scheduled event:', JSON.stringify(event, null, 2));
+
+  await checkCourts();
+
   return {
     statusCode: 200,
-    body: JSON.stringify(
-      {
-        message: "Go Serverless v3.0! Your function executed successfully!",
-        input: event,
-      },
-      null,
-      2
-    ),
+    body: JSON.stringify({
+      message: 'Function executed successfully!',
+    }),
   };
-};
+}

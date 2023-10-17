@@ -1,0 +1,87 @@
+import axios from 'axios';
+import moment from 'moment';
+import connect from './db'
+import court from './models/court';
+import { sendTelegramMessage } from './telegram';
+
+const DATE_FORMAT = 'DD MMM dddd HH:mm';
+
+const formatDateForMessaging = (dateStr: string | undefined) => {
+    try {
+        moment.locale('tr')
+        const date = moment(dateStr)
+        const needPriorty = date.day() === 6 || date.day() === 5 || date.hour() > 18
+
+        return needPriorty ? `${date.format(DATE_FORMAT)} ***` : date.format(DATE_FORMAT);
+    } catch (e) {
+        return 'hata'
+    }
+}
+
+const checkCourts = async () => {
+    connect({ db: process.env.SCRIPTS_DB_URL });
+    const courtList = await court.find({});
+    for (const currentCourt of courtList) {
+        const res = await axios({
+            method: 'get',
+            url: currentCourt.url
+        });
+        let { programs } = res.data;
+        const nextWeekRes = await axios({
+            method: 'get',
+            url: `${currentCourt.url}${res.data.nextWeek}`
+        });
+        Array.prototype.push.apply(programs, nextWeekRes.data.programs);
+
+        let availableSlots = programs.filter(program => program.statu === 1).map(program => program.programDate)
+
+        // check and alert if new slot found
+        const newSlots = availableSlots.filter(date => currentCourt.availableSlots.filter(slot => slot.date === date).length === 0)
+        if (newSlots.length > 0) {
+            // Alert new slot found
+            let msg = `Yeni Slot\nKort: ${currentCourt.name} \n`;
+            for (const slot of newSlots) {
+                msg += `Zaman: ${formatDateForMessaging(slot)}\n`
+            }
+            sendTelegramMessage(msg);
+        }
+
+        // update available slots if necessary
+        const slotDateList = currentCourt.availableSlots.map(slot => slot.date)
+        if (slotDateList.join(' - ') !== availableSlots.join(' - ')) {
+            // update slots
+            currentCourt.availableSlots = availableSlots.map(slot => ({
+                date: slot
+            }));
+            await currentCourt.save()
+        }
+
+    }
+    return process.exit(0);
+}
+
+const findTodaysAvailableSlots = async () => {
+    connect({ db: process.env.SCRIPTS_DB_URL });
+    const courtList = await court.find({});
+    let msg = `Bugunun Uygun Kortlari\n`;
+    let sendMessage = false;
+
+    for (const currentCourt of courtList) {
+        const todaysAvailableCourts = currentCourt.availableSlots
+            .filter(slot => moment(slot.date).diff(moment(), 'hours') < 24)
+            .map(slot => slot.date);
+        if (todaysAvailableCourts.length > 0) {
+            sendMessage = true;
+            msg += `Kort: ${currentCourt.name} \n`
+            for (const slot of todaysAvailableCourts) {
+                msg += `Zaman: ${formatDateForMessaging(slot)}\n`
+            }
+        }
+    }
+    if (sendMessage) {
+        sendTelegramMessage(msg);
+    }
+    return process.exit(0);
+}
+
+export { checkCourts, findTodaysAvailableSlots };
