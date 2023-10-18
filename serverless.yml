@@ -5,6 +5,8 @@ provider:
   name: aws
   runtime: nodejs18.x
   region: eu-central-1
+  logRetentionInDays: 5  # Set retention to 5 days
+
   environment:
     TENNIS_TELEGRAM_BOT_CHAT_ID: ${ssm:/tennis/TENNIS_TELEGRAM_BOT_CHAT_ID}
     TENNIS_TELEGRAM_BOT_TOKEN: ${ssm:/tennis/TENNIS_TELEGRAM_BOT_TOKEN}
@@ -15,8 +17,9 @@ functions:
     handler: handler.scheduledFunction
     events:
       - schedule:
-          rate: rate(5 minutes)
+          rate: cron(0/5 * ? * * *)
           enabled: true
 
 plugins:
   - serverless-plugin-typescript
+  - serverless-plugin-log-retention  # Include the plugin
