@@ -48,7 +48,7 @@ const checkCourts = async () => {
             for (const slot of newSlots) {
                 msg += `Zaman: ${formatDateForMessaging(slot)}\n`
             }
-            sendTelegramMessage(msg);
+            await sendTelegramMessage(msg);
             console.log("🚀 ~ file: tennisCourts.ts:49 ~ checkCourts ~ msg:", msg)
         }
 
