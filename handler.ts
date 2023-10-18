@@ -15,4 +15,4 @@ export async function scheduledFunction(event: ScheduledEvent, context: Context)
 }
 
 // @ts-ignore
-scheduledFunction();
+// scheduledFunction();
