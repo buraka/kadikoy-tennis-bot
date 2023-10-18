@@ -8,12 +8,14 @@ const DATE_FORMAT = 'DD MMM dddd HH:mm';
 
 const formatDateForMessaging = (dateStr: string | undefined) => {
     try {
-        moment.locale('tr')
-        const date = moment(dateStr)
+        console.log("🚀 ~ file: tennisCourts.ts:10 ~ formatDateForMessaging ~ dateStr:", dateStr)
+        moment.locale('tr');
+        const date = moment(dateStr);
         const needPriorty = date.day() === 6 || date.day() === 5 || date.hour() > 18
 
         return needPriorty ? `${date.format(DATE_FORMAT)} ***` : date.format(DATE_FORMAT);
     } catch (e) {
+        console.error('formatDateForMessaging', e);
         return 'hata'
     }
 }
@@ -37,6 +39,7 @@ const checkCourts = async () => {
 
         // check and alert if new slot found
         const newSlots = availableSlots.filter((date: any) => currentCourt.availableSlots.filter((slot: any) => slot.date === date).length === 0)
+        console.log("🚀 ~ file: tennisCourts.ts:42 ~ checkCourts ~ newSlots:", newSlots)
         if (newSlots.length > 0) {
             // Alert new slot found
             let msg = `Yeni Slot\nKort: ${currentCourt.name} \n`;
@@ -44,6 +47,7 @@ const checkCourts = async () => {
                 msg += `Zaman: ${formatDateForMessaging(slot)}\n`
             }
             sendTelegramMessage(msg);
+            console.log("🚀 ~ file: tennisCourts.ts:49 ~ checkCourts ~ msg:", msg)
         }
 
         // update available slots if necessary
