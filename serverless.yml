@@ -6,7 +6,6 @@ provider:
   runtime: nodejs18.x
   region: eu-central-1
   logRetentionInDays: 5  # Set retention to 5 days
-
   environment:
     TENNIS_TELEGRAM_BOT_CHAT_ID: ${ssm:/tennis/TENNIS_TELEGRAM_BOT_CHAT_ID}
     TENNIS_TELEGRAM_BOT_TOKEN: ${ssm:/tennis/TENNIS_TELEGRAM_BOT_TOKEN}
@@ -15,12 +14,14 @@ provider:
 functions:
   scheduledFunction:
     handler: handler.scheduledFunction
+    timeout: 520
     events:
       - schedule:
           rate: cron(0/5 * ? * * *)
           enabled: true
   morningFunction:
     handler: handler.morningFunction
+    timeout: 520
     events:
       - schedule:
           rate: cron(30 5 * * ? *)

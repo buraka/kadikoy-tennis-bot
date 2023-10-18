@@ -24,6 +24,7 @@ const formatDateForMessaging = (dateStr: string | undefined) => {
 const checkCourts = async () => {
     connect({ db: process.env.SCRIPTS_DB_URL });
     const courtList: any[] = await court.find({});
+    console.log("🚀 ~ file: tennisCourts.ts:27 ~ checkCourts ~ courtList:", courtList.map(c => c.name))
     for (const currentCourt of courtList) {
         const res = await axios({
             method: 'get',
@@ -40,7 +41,7 @@ const checkCourts = async () => {
 
         // check and alert if new slot found
         const newSlots = availableSlots.filter((date: any) => currentCourt.availableSlots.filter((slot: any) => slot.date === date).length === 0)
-        console.log("🚀 ~ file: tennisCourts.ts:42 ~ checkCourts ~ newSlots:", newSlots)
+        console.log("🚀 ~ file: tennisCourts.ts:42 ~ checkCourts ~ newSlots:", newSlots, { courtName: currentCourt.name })
         if (newSlots.length > 0) {
             // Alert new slot found
             let msg = `Yeni Slot\nKort: ${currentCourt.name} \n`;
