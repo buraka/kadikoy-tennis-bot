@@ -23,7 +23,7 @@ functions:
     handler: handler.morningFunction
     events:
       - schedule:
-          rate: cron(30 8 * * ? *)
+          rate: cron(30 5 * * ? *)
           enabled: true
 plugins:
   - serverless-plugin-typescript
