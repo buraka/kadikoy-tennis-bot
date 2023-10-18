@@ -1,5 +1,5 @@
 import axios from 'axios';
-import moment from 'moment';
+import * as moment from "moment";
 import connect from './db'
 import court from './models/court';
 import { sendTelegramMessage } from './telegram';
@@ -9,7 +9,7 @@ const DATE_FORMAT = 'DD MMM dddd HH:mm';
 const formatDateForMessaging = (dateStr: string | undefined) => {
     try {
         console.log("🚀 ~ file: tennisCourts.ts:10 ~ formatDateForMessaging ~ dateStr:", dateStr)
-        // moment.locale('tr');
+        moment.locale('tr');
         const date = moment(dateStr);
         const needPriorty = date.day() === 6 || date.day() === 5 || date.hour() > 18
 
