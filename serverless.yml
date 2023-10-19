@@ -3,7 +3,7 @@ frameworkVersion: '3'
 
 provider:
   name: aws
-  runtime: nodejs20.x
+  runtime: nodejs18.x
   region: eu-central-1
   logRetentionInDays: 5  # Set retention to 5 days
   environment:
