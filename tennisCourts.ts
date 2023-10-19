@@ -63,7 +63,7 @@ const checkCourts = async () => {
         }
 
     }
-    return process.exit(0);
+    // return process.exit(0);
 }
 
 const findTodaysAvailableSlots = async () => {
@@ -74,8 +74,9 @@ const findTodaysAvailableSlots = async () => {
 
     for (const currentCourt of courtList) {
         const todaysAvailableCourts = currentCourt.availableSlots
-            .filter(slot => moment(slot.date).diff(moment(), 'hours') < 24)
-            .map(slot => slot.date);
+            .filter((slot: any) => moment(slot.date).diff(moment(), 'hours') < 24)
+            .map((slot: any) => slot.date);
+        console.log("🚀 ~ file: tennisCourts.ts:79 ~ findTodaysAvailableSlots ~ todaysAvailableCourts:", todaysAvailableCourts)
         if (todaysAvailableCourts.length > 0) {
             sendMessage = true;
             msg += `Kort: ${currentCourt.name} \n`
@@ -85,9 +86,10 @@ const findTodaysAvailableSlots = async () => {
         }
     }
     if (sendMessage) {
-        sendTelegramMessage(msg);
+        console.log("🚀 ~ file: tennisCourts.ts:88 ~ findTodaysAvailableSlots ~ sendMessage:", sendMessage)
+        await sendTelegramMessage(msg);
     }
-    return process.exit(0);
+    // return process.exit(0);
 }
 
 export { checkCourts, findTodaysAvailableSlots };
