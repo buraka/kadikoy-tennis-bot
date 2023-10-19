@@ -16,7 +16,6 @@ export async function scheduledFunction(event: ScheduledEvent) {
     console.error(error);
     throw error;
   }
-
 }
 
 export async function morningFunction(event: ScheduledEvent) {

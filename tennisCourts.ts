@@ -77,7 +77,7 @@ const findTodaysAvailableSlots = async () => {
         const todaysAvailableCourts = currentCourt.availableSlots
             .filter((slot: any) => moment(slot.date).diff(moment(), 'hours') < 24)
             .map((slot: any) => slot.date);
-        console.log("🚀 ~ file: tennisCourts.ts:79 ~ findTodaysAvailableSlots ~ todaysAvailableCourts:", todaysAvailableCourts)
+        console.log("🚀 ~ file: tennisCourts.ts:79 ~ findTodaysAvailableSlots ~ todaysAvailableCourts:", todaysAvailableCourts, { name: currentCourt.name })
         if (todaysAvailableCourts.length > 0) {
             sendMessage = true;
             msg += `Kort: ${currentCourt.name} \n`
@@ -87,7 +87,7 @@ const findTodaysAvailableSlots = async () => {
         }
     }
     if (sendMessage) {
-        console.log("🚀 ~ file: tennisCourts.ts:88 ~ findTodaysAvailableSlots ~ sendMessage:", sendMessage)
+        console.log("🚀 ~ file: tennisCourts.ts:88 ~ findTodaysAvailableSlots ~ msg:", msg)
         await sendTelegramMessage(msg);
     }
     // return process.exit(0);
