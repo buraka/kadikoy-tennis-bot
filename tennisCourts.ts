@@ -71,6 +71,7 @@ const findTodaysAvailableSlots = async () => {
     const courtList = await court.find({});
     let msg = `Bugunun Uygun Kortlari\n`;
     let sendMessage = false;
+    console.log("🚀 ~ file: tennisCourts.ts:74 ~ checkCourts ~ courtList:", courtList.map(c => c.name))
 
     for (const currentCourt of courtList) {
         const todaysAvailableCourts = currentCourt.availableSlots
