@@ -1,6 +1,6 @@
 import axios from 'axios';
-import * as moment from "moment";
-// import moment from "moment";
+// import * as moment from "moment";
+import moment from "moment";
 import connect from './db'
 import court from './models/court';
 import { sendTelegramMessage } from './telegram';
