@@ -4,6 +4,7 @@ import moment from "moment";
 import connect from './db'
 import court from './models/court';
 import { sendTelegramMessage } from './telegram';
+import { COURT_TYPE } from './constants';
 
 const DATE_FORMAT = 'DD MMM dddd HH:mm';
 
@@ -21,9 +22,9 @@ const formatDateForMessaging = (dateStr: string | undefined) => {
     }
 }
 
-const checkCourts = async () => {
+const checkCourts = async (type: string) => {
     connect({ db: process.env.SCRIPTS_DB_URL });
-    const courtList: any[] = await court.find({});
+    const courtList: any[] = await court.find({ type });
     console.log("🚀 ~ file: tennisCourts.ts:27 ~ checkCourts ~ courtList:", courtList.map(c => c.name))
     for (const currentCourt of courtList) {
         const res = await axios({
@@ -44,7 +45,7 @@ const checkCourts = async () => {
         console.log("🚀 ~ file: tennisCourts.ts:42 ~ checkCourts ~ newSlots:", newSlots, { courtName: currentCourt.name })
         if (newSlots.length > 0) {
             // Alert new slot found
-            let msg = `Yeni Slot\nKort: ${currentCourt.name} \n`;
+            let msg = `Yeni Slot\n${type === COURT_TYPE.TENNIS ? 'Kort' : 'Saha'}: ${currentCourt.name} \n`;
             for (const slot of newSlots) {
                 msg += `Zaman: ${formatDateForMessaging(slot)}\n`
             }
@@ -66,10 +67,10 @@ const checkCourts = async () => {
     // return process.exit(0);
 }
 
-const findTodaysAvailableSlots = async () => {
+const findTodaysAvailableSlots = async (type: string) => {
     connect({ db: process.env.SCRIPTS_DB_URL });
-    const courtList = await court.find({});
-    let msg = `Bugunun Uygun Kortlari\n`;
+    const courtList = await court.find({ type });
+    let msg = type === COURT_TYPE.TENNIS ? `Bugunun Uygun Kortlari\n` : `Bugunun Hali Sahalari\n`;
     let sendMessage = false;
     console.log("🚀 ~ file: tennisCourts.ts:74 ~ checkCourts ~ courtList:", courtList.map(c => c.name))
 
@@ -80,7 +81,7 @@ const findTodaysAvailableSlots = async () => {
         console.log("🚀 ~ file: tennisCourts.ts:79 ~ findTodaysAvailableSlots ~ todaysAvailableCourts:", todaysAvailableCourts, { name: currentCourt.name })
         if (todaysAvailableCourts.length > 0) {
             sendMessage = true;
-            msg += `Kort: ${currentCourt.name} \n`
+            msg += `${type === COURT_TYPE.TENNIS ? 'Kort' : 'Saha'}: ${currentCourt.name} \n`
             for (const slot of todaysAvailableCourts) {
                 msg += `Zaman: ${formatDateForMessaging(slot)}\n`
             }

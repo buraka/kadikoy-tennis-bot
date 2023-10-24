@@ -4,8 +4,9 @@ import { checkCourts, findTodaysAvailableSlots } from './tennisCourts';
 export async function scheduledFunction(event: ScheduledEvent) {
   try {
     console.log('Scheduled event:', JSON.stringify(event, null, 2));
+    const type = event['parameter'];
 
-    await checkCourts();
+    await checkCourts(type);
     return {
       statusCode: 200,
       body: JSON.stringify({
@@ -21,8 +22,9 @@ export async function scheduledFunction(event: ScheduledEvent) {
 export async function morningFunction(event: ScheduledEvent) {
   try {
     console.log('Scheduled event:', JSON.stringify(event, null, 2));
+    const type = event['parameter'];
+    await findTodaysAvailableSlots(type);
 
-    await findTodaysAvailableSlots();
     return {
       statusCode: 200,
       body: JSON.stringify({
