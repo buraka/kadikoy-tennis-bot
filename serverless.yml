@@ -12,6 +12,15 @@ provider:
     SCRIPTS_DB_URL: ${ssm:/tennis/SCRIPTS_DB_URL}
 
 functions:
+  scheduledFootballFunction:
+    handler: handler.scheduledFunction
+    timeout: 520
+    events:
+      - schedule:
+          rate: cron(0/5 * ? * * *)
+          enabled: true
+          input:
+            parameter: FOOTBALL
   scheduledFunction:
     handler: handler.scheduledFunction
     timeout: 520
@@ -19,6 +28,17 @@ functions:
       - schedule:
           rate: cron(0/5 * ? * * *)
           enabled: true
+          input:
+            parameter: TENNIS
+  morningFootballFunction:
+    handler: handler.morningFunction
+    timeout: 520
+    events:
+      - schedule:
+          rate: cron(30 5 * * ? *)
+          enabled: true
+          input:
+            parameter: FOOTBALL
   morningFunction:
     handler: handler.morningFunction
     timeout: 520
@@ -26,6 +46,8 @@ functions:
       - schedule:
           rate: cron(30 5 * * ? *)
           enabled: true
+          input:
+            parameter: TENNIS
 plugins:
   - serverless-plugin-typescript
   - serverless-plugin-log-retention  # Include the plugin
