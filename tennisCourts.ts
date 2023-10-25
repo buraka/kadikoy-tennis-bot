@@ -1,7 +1,6 @@
 import axios from 'axios';
 // import * as moment from "moment";
 import moment from "moment";
-import connect from './db'
 import court from './models/court';
 import { sendTelegramMessage } from './telegram';
 import { COURT_TYPE } from './constants';
@@ -23,7 +22,6 @@ const formatDateForMessaging = (dateStr: string | undefined) => {
 }
 
 const checkCourts = async (type: string) => {
-    connect({ db: process.env.SCRIPTS_DB_URL });
     const courtList: any[] = await court.find({ type });
     console.log("🚀 ~ file: tennisCourts.ts:27 ~ checkCourts ~ courtList:", courtList.map(c => c.name))
     for (const currentCourt of courtList) {
@@ -68,7 +66,6 @@ const checkCourts = async (type: string) => {
 }
 
 const findTodaysAvailableSlots = async (type: string) => {
-    connect({ db: process.env.SCRIPTS_DB_URL });
     const courtList = await court.find({ type });
     let msg = type === COURT_TYPE.TENNIS ? `Bugunun Uygun Kortlari\n` : `Bugunun Hali Sahalari\n`;
     let sendMessage = false;
