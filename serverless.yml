@@ -11,6 +11,7 @@ provider:
     TENNIS_TELEGRAM_BOT_TOKEN: ${ssm:/tennis/TENNIS_TELEGRAM_BOT_TOKEN}
     SCRIPTS_DB_URL: ${ssm:/tennis/SCRIPTS_DB_URL}
 
+functions:
   scheduledFunction:
     handler: handler.scheduledFunction
     timeout: 520
