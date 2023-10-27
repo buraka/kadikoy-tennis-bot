@@ -47,7 +47,7 @@ const checkCourts = async (type: string) => {
             for (const slot of newSlots) {
                 msg += `Zaman: ${formatDateForMessaging(slot)}\n`
             }
-            await sendTelegramMessage(msg);
+            await sendTelegramMessage(msg, type);
             console.log("🚀 ~ file: tennisCourts.ts:49 ~ checkCourts ~ msg:", msg)
         }
 
@@ -86,7 +86,7 @@ const findTodaysAvailableSlots = async (type: string) => {
     }
     if (sendMessage) {
         console.log("🚀 ~ file: tennisCourts.ts:88 ~ findTodaysAvailableSlots ~ msg:", msg)
-        await sendTelegramMessage(msg);
+        await sendTelegramMessage(msg, type);
     }
     // return process.exit(0);
 }
