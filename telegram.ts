@@ -1,6 +1,7 @@
 
 // import * as TelegramBot from 'node-telegram-bot-api';
 import TelegramBot from 'node-telegram-bot-api';
+import { COURT_TYPE } from './constants';
 
 let bot: TelegramBot;
 
@@ -12,8 +13,14 @@ const connectBot = () => {
    return bot;
 }
 
-const sendTelegramMessage = async (text: string) => {
-   await bot.sendMessage(process.env.TENNIS_TELEGRAM_BOT_CHAT_ID || '', text);
+const getChatId = (type: string): string => {
+   return type && type === COURT_TYPE.FOOTBALL ?
+      process.env.FOOTBALL_TELEGRAM_BOT_CHAT_ID
+      : process.env.TENNIS_TELEGRAM_BOT_CHAT_ID;
+}
+
+const sendTelegramMessage = async (text: string, type?: string) => {
+   await bot.sendMessage(getChatId(type), text);
 }
 
 const closeBot = () => {

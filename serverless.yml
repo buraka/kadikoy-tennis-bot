@@ -8,6 +8,7 @@ provider:
   logRetentionInDays: 5  # Set retention to 5 days
   environment:
     TENNIS_TELEGRAM_BOT_CHAT_ID: ${ssm:/tennis/TENNIS_TELEGRAM_BOT_CHAT_ID}
+    FOOTBALL_TELEGRAM_BOT_CHAT_ID: ${ssm:/tennis/FOOTBALL_TELEGRAM_BOT_CHAT_ID}
     TENNIS_TELEGRAM_BOT_TOKEN: ${ssm:/tennis/TENNIS_TELEGRAM_BOT_TOKEN}
     SCRIPTS_DB_URL: ${ssm:/tennis/SCRIPTS_DB_URL}
 
