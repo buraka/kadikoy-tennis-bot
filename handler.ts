@@ -2,7 +2,7 @@ import { ScheduledEvent } from 'aws-lambda';
 import { checkCourts, findTodaysAvailableSlots } from './tennisCourts';
 import { COURT_TYPE } from './constants';
 import connect from './db'
-import { closeBot, connectBot } from './telegram';
+import { closeBot, connectBot, sendTelegramMessage } from './telegram';
 import { sleep } from './utils';
 import { getAvailableHours } from './olleyyPitch';
 
@@ -65,3 +65,4 @@ export async function morningFunction(event: ScheduledEvent) {
 // scheduledFunction();
 // morningFunction();
 // getAvailableHours();
+// sendTelegramMessage('`test`')

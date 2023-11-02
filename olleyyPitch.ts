@@ -36,7 +36,8 @@ export const getAvailableHours = async () => {
                 if (newSlots.length > 0) {
                     msg += `\n\nYeni Olleyy Saha\nSaha: ${currentPitch.name} \n`;
                     for (const slot of newSlots) {
-                        msg += `Zaman: ${moment(slot).minute(0).format(DATE_FORMAT)}\n`
+                        const slotDate = moment(slot);
+                        msg += `Zaman: ${slotDate.format(DATE_FORMAT)}\n`
                         console.log(moment(slot).format(DATE_FORMAT))
                     }
                     console.log("🚀 ~ file: olleyyPitch.ts:37 ~ getAvailableHours ~ msg:", msg)
@@ -44,7 +45,7 @@ export const getAvailableHours = async () => {
             }
 
         }
-        if (msg.length > 0){
+        if (msg.length > 0) {
             await sendTelegramMessage(msg, COURT_TYPE.OLLEYY_FOOTBALL);
             msg = '';
         }

@@ -13,7 +13,7 @@ const formatDateForMessaging = (dateStr: string | undefined) => {
         const date = moment(dateStr);
         const needPriorty = date.day() === 6 || date.day() === 5 || date.hour() > 18;
 
-        return needPriorty ? `${date.format(DATE_FORMAT)} ***` : date.format(DATE_FORMAT);
+        return needPriorty ? `\`${date.format(DATE_FORMAT)}\`` : date.format(DATE_FORMAT);
     } catch (e) {
         console.error('formatDateForMessaging', e);
         return 'hata'

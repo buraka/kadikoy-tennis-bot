@@ -20,7 +20,7 @@ const getChatId = (type: string): string => {
 }
 
 const sendTelegramMessage = async (text: string, type?: string) => {
-   await bot.sendMessage(getChatId(type), text);
+   await bot.sendMessage(getChatId(type), text, { parse_mode: 'Markdown' });
 }
 
 const closeBot = () => {
