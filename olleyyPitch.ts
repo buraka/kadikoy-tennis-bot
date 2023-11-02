@@ -35,7 +35,7 @@ export const getAvailableHours = async () => {
 
                 if (newSlots.length > 0) {
                     msg += `\n\nYeni Olleyy Saha\nSaha: ${currentPitch.name} \n`;
-                    for (const slot of availableSlotsByDate) {
+                    for (const slot of newSlots) {
                         msg += `Zaman: ${moment(slot).minute(0).format(DATE_FORMAT)}\n`
                         console.log(moment(slot).format(DATE_FORMAT))
                     }
