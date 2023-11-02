@@ -13,8 +13,9 @@ export const getAvailableHours = async () => {
     const startDate = new Date();
     let msg: string = '';
     for (const currentPitch of pitchList) {
+        console.log("🚀 ~ file: olleyyPitch.ts:16 ~ getAvailableHours ~ currentPitchname:", currentPitch.name)
         const availableSlots: string[] = [];
-        for (let i = 0; i < 14; i++) { // Loop through 14 days
+        for (let i = 0; i < 8; i++) { // Loop through 8 days
             const currentDate = moment(startDate).add(i, 'days');
             const date = currentDate.format(OLLEYY_DATE_FORMAT);
             console.log("🚀 ~ file: olleyyPitch.ts:18 ~ getAvailableHours ~ formattedDate:", date)
@@ -42,7 +43,10 @@ export const getAvailableHours = async () => {
             }
 
         }
-        await sendTelegramMessage(msg, COURT_TYPE.OLLEYY_FOOTBALL);
+        if (msg.length > 0){
+            await sendTelegramMessage(msg, COURT_TYPE.OLLEYY_FOOTBALL);
+            msg = '';
+        }
 
         console.log("🚀 ~ file: olleyyPitch.ts:28 ~ getAvailableHours ~ availableSlots:", availableSlots)
         // save hours
