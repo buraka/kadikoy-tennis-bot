@@ -11,6 +11,7 @@ export const getAvailableHours = async () => {
 
     const pitchList: any[] = await court.find({ type: COURT_TYPE.OLLEYY_FOOTBALL });
     const startDate = new Date();
+    let msg: string = '';
     for (const currentPitch of pitchList) {
         const availableSlots: string[] = [];
         for (let i = 0; i < 14; i++) { // Loop through 14 days
@@ -32,16 +33,17 @@ export const getAvailableHours = async () => {
                 console.log("🚀 ~ file: olleyyPitch.ts:32 ~ getAvailableHours ~ newSlots:", newSlots)
 
                 if (newSlots.length > 0) {
-                    let msg = `Yeni Olleyy Saha\nSaha: ${currentPitch.name} \n`;
+                    msg += `\n\nYeni Olleyy Saha\nSaha: ${currentPitch.name} \n`;
                     for (const slot of availableSlotsByDate) {
                         msg += `Zaman: ${currentDate.hour(slot).minute(0).format(DATE_FORMAT)}\n`
                     }
-                    await sendTelegramMessage(msg, COURT_TYPE.OLLEYY_FOOTBALL);
                     console.log("🚀 ~ file: olleyyPitch.ts:37 ~ getAvailableHours ~ msg:", msg)
                 }
             }
 
         }
+        await sendTelegramMessage(msg, COURT_TYPE.OLLEYY_FOOTBALL);
+
         console.log("🚀 ~ file: olleyyPitch.ts:28 ~ getAvailableHours ~ availableSlots:", availableSlots)
         // save hours
         // if (availableHours.length > 0)
