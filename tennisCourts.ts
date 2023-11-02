@@ -4,15 +4,14 @@ import moment from "moment";
 import court from './models/court';
 import { sendTelegramMessage } from './telegram';
 import { COURT_TYPE } from './constants';
-
-const DATE_FORMAT = 'DD MMM dddd HH:mm';
+import { DATE_FORMAT } from './utils';
 
 const formatDateForMessaging = (dateStr: string | undefined) => {
     try {
         console.log("🚀 ~ file: tennisCourts.ts:10 ~ formatDateForMessaging ~ dateStr:", dateStr)
         moment.locale('tr');
         const date = moment(dateStr);
-        const needPriorty = date.day() === 6 || date.day() === 5 || date.hour() > 18
+        const needPriorty = date.day() === 6 || date.day() === 5 || date.hour() > 18;
 
         return needPriorty ? `${date.format(DATE_FORMAT)} ***` : date.format(DATE_FORMAT);
     } catch (e) {

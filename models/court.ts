@@ -8,7 +8,7 @@ const CourtSchema = new mongoose.Schema({
     url: String,
     type: {
         type: String,
-        enum: [COURT_TYPE.FOOTBALL, COURT_TYPE.TENNIS],
+        enum: [COURT_TYPE.FOOTBALL, COURT_TYPE.OLLEYY_FOOTBALL, COURT_TYPE.TENNIS],
         default: COURT_TYPE.TENNIS
     },
     availableSlots: [{

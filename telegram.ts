@@ -14,9 +14,9 @@ const connectBot = () => {
 }
 
 const getChatId = (type: string): string => {
-   return type && type === COURT_TYPE.FOOTBALL ?
-      process.env.FOOTBALL_TELEGRAM_BOT_CHAT_ID
-      : process.env.TENNIS_TELEGRAM_BOT_CHAT_ID;
+   return type && type === COURT_TYPE.TENNIS ?
+      process.env.TENNIS_TELEGRAM_BOT_CHAT_ID
+      : process.env.FOOTBALL_TELEGRAM_BOT_CHAT_ID;
 }
 
 const sendTelegramMessage = async (text: string, type?: string) => {
