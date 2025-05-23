@@ -3,3 +3,7 @@ export enum COURT_TYPE {
     FOOTBALL = 'FOOTBALL',
     TENNIS = 'TENNIS',
 }
+
+export enum AVAILABLE_COURT_TYPE {
+    TENNIS = 'TENNIS',
+}

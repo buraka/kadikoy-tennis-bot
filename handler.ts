@@ -1,6 +1,6 @@
 import { ScheduledEvent } from 'aws-lambda';
 import { checkCourts, findTodaysAvailableSlots } from './tennisCourts';
-import { COURT_TYPE } from './constants';
+import { AVAILABLE_COURT_TYPE, COURT_TYPE } from './constants';
 import connect from './db'
 import { closeBot, connectBot, sendTelegramMessage } from './telegram';
 import { sleep } from './utils';
@@ -11,7 +11,7 @@ export async function scheduledFunction(event: ScheduledEvent) {
     console.log('Scheduled event:', JSON.stringify(event, null, 2));
     connect({ db: process.env.SCRIPTS_DB_URL });
     connectBot();
-    const types = Object.keys(COURT_TYPE);
+    const types = Object.keys(AVAILABLE_COURT_TYPE);
     for (const type of types) {
       console.log("🚀 ~ file: handler.ts:13 ~ scheduledFunction ~ type:", type)
       if (type === COURT_TYPE.OLLEYY_FOOTBALL) {
