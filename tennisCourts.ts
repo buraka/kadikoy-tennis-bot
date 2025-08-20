@@ -24,7 +24,7 @@ const checkCourts = async (type: string) => {
     const courtList: any[] = await court.find({ type });
     console.log("🚀 ~ file: tennisCourts.ts:27 ~ checkCourts ~ courtList:", courtList.map(c => c.name))
     
-    const thisOneHealthReq = await axios({
+    const thisOneHealthReq = axios({
         method: 'get',
         url: "https://thisonebackend.onrender.com/api/categories"
     });
