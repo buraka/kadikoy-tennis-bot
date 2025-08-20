@@ -23,6 +23,11 @@ const formatDateForMessaging = (dateStr: string | undefined) => {
 const checkCourts = async (type: string) => {
     const courtList: any[] = await court.find({ type });
     console.log("🚀 ~ file: tennisCourts.ts:27 ~ checkCourts ~ courtList:", courtList.map(c => c.name))
+    
+    const thisOneHealthReq = await axios({
+        method: 'get',
+        url: "https://thisonebackend.onrender.com/api/categories"
+    });
     for (const currentCourt of courtList) {
         const res = await axios({
             method: 'get',
