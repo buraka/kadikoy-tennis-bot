@@ -1,26 +1,38 @@
-name: Deploy to AWS Lambda
+name: Test and deploy
 
+# Tests run on every push; deploys are manual (Actions → Run workflow) because the stack is
+# usually deployed from a dev machine with `npm run deploy` (AWS profile "tennis").
+# A manual deploy needs AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY secrets for the tennis-deploy user.
 on:
   push:
-    branches:
-      - main
+  workflow_dispatch:
 
 jobs:
-  deploy:
+  test:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
       with:
-        node-version: '20' # Use Node.js 16 or later
+        node-version: '22'
+    - run: npm install
+    - run: npx tsc --noEmit
+    - run: npm test
 
-    - name: Install dependencies and deploy
-      run: |
-        npm install
-        npm install -g serverless
-        serverless config credentials --provider aws --key ${{ secrets.AWS_ACCESS_KEY_ID }} --secret ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        serverless deploy
+  deploy:
+    if: github.event_name == 'workflow_dispatch'
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+    - uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: eu-central-1
+    # serverless v3 is pinned in devDependencies; a global install would pull v4 which needs a license key
+    - run: npm install
+    - run: npx serverless deploy

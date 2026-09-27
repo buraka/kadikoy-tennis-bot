@@ -1,0 +1,7 @@
+// Backend endpoints; real values come from Secrets.xcconfig (gitignored, written by tools/ios-config.sh).
+// Note: "//" starts a comment in xcconfig, so URLs are written as https:/$()/host there.
+SLOTS_URL =
+REGISTER_URL =
+APP_SECRET =
+
+#include? "Secrets.xcconfig"

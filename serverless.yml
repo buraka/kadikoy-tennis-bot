@@ -3,30 +3,126 @@ frameworkVersion: '3'
 
 provider:
   name: aws
-  runtime: nodejs18.x
+  runtime: nodejs22.x
   region: eu-central-1
+  memorySize: 256
   logRetentionInDays: 5  # Set retention to 5 days
+  # Shares the gps-tracker account; tags keep its cost separate in billing
+  stackTags:
+    project: kadikoy-tennis-bot
+  tags:
+    project: kadikoy-tennis-bot
   environment:
-    TENNIS_TELEGRAM_BOT_CHAT_ID: ${ssm:/tennis/TENNIS_TELEGRAM_BOT_CHAT_ID}
-    FOOTBALL_TELEGRAM_BOT_CHAT_ID: ${ssm:/tennis/FOOTBALL_TELEGRAM_BOT_CHAT_ID}
-    TENNIS_TELEGRAM_BOT_TOKEN: ${ssm:/tennis/TENNIS_TELEGRAM_BOT_TOKEN}
-    SCRIPTS_DB_URL: ${ssm:/tennis/SCRIPTS_DB_URL}
+    SLOTS_TABLE: ${self:service}-${sls:stage}-slots
+    DEVICES_TABLE: ${self:service}-${sls:stage}-devices
+    SLOTS_BUCKET: ${self:service}-${sls:stage}-${aws:accountId}-public
+    APNS_TEAM_ID: CKR83RG3GU
+    APNS_BUNDLE_ID: com.brk.tenis
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+          Resource:
+            - Fn::GetAtt: [SlotsTable, Arn]
+        - Effect: Allow
+          Action:
+            - dynamodb:PutItem
+            - dynamodb:DeleteItem
+            - dynamodb:Scan
+          Resource:
+            - Fn::GetAtt: [DevicesTable, Arn]
+        - Effect: Allow
+          Action:
+            - s3:PutObject
+          Resource:
+            - arn:aws:s3:::${self:provider.environment.SLOTS_BUCKET}/slots.json
+        # APNs key and app secret are read at runtime (see secrets.ts)
+        - Effect: Allow
+          Action:
+            - ssm:GetParameters
+          Resource:
+            - arn:aws:ssm:${aws:region}:${aws:accountId}:parameter/tennis/*
+
+package:
+  patterns:
+    - '!ios/**'
+    - '!test/**'
+    - '!scripts/**'
+    - '!tools/**'
+    - '!infra/**'
 
 functions:
   scheduledFunction:
     handler: handler.scheduledFunction
-    timeout: 520
+    timeout: 60
     events:
       - schedule:
-          rate: cron(0/5 * ? * * *)
+          rate: rate(2 minutes)
           enabled: true
-  morningFunction:
-    handler: handler.morningFunction
-    timeout: 520
-    events:
-      - schedule:
-          rate: cron(30 5 * * ? *)
-          enabled: true
+  registerDevice:
+    handler: handler.registerDevice
+    timeout: 10
+    url: true
+
+resources:
+  Resources:
+    SlotsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.SLOTS_TABLE}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: courtKey
+            AttributeType: S
+        KeySchema:
+          - AttributeName: courtKey
+            KeyType: HASH
+    DevicesTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.DEVICES_TABLE}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: token
+            AttributeType: S
+        KeySchema:
+          - AttributeName: token
+            KeyType: HASH
+    # Holds only slots.json (public court availability the iOS app reads)
+    SlotsBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:provider.environment.SLOTS_BUCKET}
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: true
+          IgnorePublicAcls: true
+          BlockPublicPolicy: false
+          RestrictPublicBuckets: false
+    SlotsBucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: !Ref SlotsBucket
+        PolicyDocument:
+          Statement:
+            - Effect: Allow
+              Principal: '*'
+              Action: s3:GetObject
+              Resource: arn:aws:s3:::${self:provider.environment.SLOTS_BUCKET}/slots.json
+    # Public function URLs now need lambda:InvokeFunction too; serverless v3 only adds InvokeFunctionUrl
+    RegisterDeviceInvokePermission:
+      Type: AWS::Lambda::Permission
+      Properties:
+        FunctionName: !GetAtt RegisterDeviceLambdaFunction.Arn
+        Action: lambda:InvokeFunction
+        Principal: '*'
+        InvokedViaFunctionUrl: true
+  Outputs:
+    SlotsUrl:
+      Value: https://${self:provider.environment.SLOTS_BUCKET}.s3.${aws:region}.amazonaws.com/slots.json
+
 plugins:
   - serverless-plugin-typescript
   - serverless-plugin-log-retention  # Include the plugin

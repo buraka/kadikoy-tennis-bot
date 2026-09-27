@@ -10,3 +10,8 @@ jspm_packages
 .vscode/
 *.env
 .build/
+# iOS
+ios/Secrets.xcconfig
+ios/*.xcodeproj
+ios/build/
+__pycache__/
