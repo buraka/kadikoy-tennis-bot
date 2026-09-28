@@ -12,7 +12,8 @@ export interface Court {
 }
 
 // upcoming = listed but not on sale yet ("Gelecek seansları satın alamazsınız")
-export type SlotStatus = 'available' | 'sold' | 'past' | 'upcoming' | 'unknown';
+// held = in someone else's cart; it comes back as available (and notifies) if the cart expires
+export type SlotStatus = 'available' | 'sold' | 'held' | 'past' | 'upcoming' | 'unknown';
 
 export interface Slot {
     date: string; // SLOT_DATE_FORMAT, Istanbul time
@@ -93,11 +94,13 @@ export const getTennisCourts = async (): Promise<Court[]> => {
     return courtsByFacility.flat();
 };
 
-// Tooltip text on each slot's cart button; only "Sepete eklenebilir" can be booked
+// Tooltip text on each slot's cart button
 const getSlotStatus = (title: string | undefined): SlotStatus => {
     if (!title) return 'unknown';
-    if (title.includes('Sepete eklenebilir')) return 'available';
+    // Members see "Sepete eklenebilir"; visitors see the same free slot as "Giriş Yap"
+    if (title.includes('Sepete eklenebilir') || title.includes('Giriş Yap')) return 'available';
     if (title.includes('satın alındı')) return 'sold';
+    if (title.includes('sepetinde')) return 'held';
     if (title.includes('Geçmiş')) return 'past';
     if (title.includes('Gelecek')) return 'upcoming';
     console.warn('unknown slot tooltip:', title);

@@ -6,7 +6,7 @@ import { isLoggedInPage, parseSlots, Slot } from '../kadikoy';
 import { buildMessage } from '../notifications';
 import { isPrimeTime } from '../utils';
 
-// Real pages captured 2026-09-27: anonymous view (current week) and member view (2 weeks)
+// Real pages: anonymous views (2026-09-27 full week, 2026-09-28 new week with free slots) and member view (2 weeks)
 const fixture = (name: string) => readFileSync(join(__dirname, 'fixtures', name), 'utf8');
 const countBy = (slots: Slot[]) => slots.reduce<Record<string, number>>((acc, s) => {
     acc[s.status] = (acc[s.status] || 0) + 1;
@@ -19,6 +19,12 @@ test('anonymous page shows only the current week', () => {
     assert.equal(new Set(slots.map((s) => s.date.slice(0, 10))).size, 7);
     assert.deepEqual(countBy(slots), { sold: 90, past: 1 });
     assert.equal(isLoggedInPage(html), false);
+});
+
+test('anonymous page marks free slots as "Giriş Yap"', () => {
+    const slots = parseSlots(fixture('anonymous-week-open.html'));
+    assert.deepEqual(countBy(slots), { sold: 63, available: 19, past: 1 });
+    assert.equal(slots[0].date.slice(0, 10), '2026-09-28');
 });
 
 test('member page shows two weeks with bookable and not-yet-open slots', () => {
