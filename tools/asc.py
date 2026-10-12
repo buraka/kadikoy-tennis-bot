@@ -16,6 +16,7 @@ KEY_ID, ISSUER = E["ASC_KEY_ID"], E["ASC_ISSUER_ID"]
 T = env("asc-tenis.env")
 APP = os.environ.get("ASC_APP_ID", T.get("ASC_APP_ID", ""))
 GROUP = os.environ.get("ASC_GROUP_ID", T.get("ASC_GROUP_ID", ""))
+EXTERNAL_GROUP = os.environ.get("ASC_EXTERNAL_GROUP_ID", T.get("ASC_EXTERNAL_GROUP_ID", ""))
 key = open(glob.glob(os.path.expanduser(f"~/private_keys/AuthKey_{KEY_ID}.p8"))[0]).read()
 
 def token():
@@ -56,6 +57,15 @@ def attach(build_id):
                  {"data": [{"type": "builds", "id": build_id}]})
     return st
 
+def attach_external(build_id):
+    """Harici gruba (herkese açık link) bağlar ve Beta App Review'a gönderir."""
+    st, _ = call("POST", f"/v1/betaGroups/{EXTERNAL_GROUP}/relationships/builds",
+                 {"data": [{"type": "builds", "id": build_id}]})
+    st2, _ = call("POST", "/v1/betaAppReviewSubmissions",
+                  {"data": {"type": "betaAppReviewSubmissions",
+                            "relationships": {"build": {"data": {"type": "builds", "id": build_id}}}}})
+    return st, st2
+
 if __name__ == "__main__":
     cmd = sys.argv[1] if len(sys.argv) > 1 else "list"
     if cmd == "list":
@@ -67,3 +77,5 @@ if __name__ == "__main__":
         if not bid:
             print("derleme geçerli hale gelmedi"); sys.exit(1)
         print("iç test grubuna bağlandı:", attach(bid))
+        if EXTERNAL_GROUP:
+            print("harici gruba bağlandı / incelemeye gönderildi:", attach_external(bid))
